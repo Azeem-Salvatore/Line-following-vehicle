@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+# Line-following-vehicle
+Note: This project is implemented in Webots
 
-You can use the [editor on GitHub](https://github.com/Azeem-Salvatore/Line-following-vehicle/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This project comprises of four different robotic cars which tracks and follows a black line etched on a white surface. Once a robotic car (say Car red) reaches it's destination it autonomously commands the next robotic car to move and replace the red car's initial location. And while tracking the black line the robotic cars also avoid the obstacles placed in their route.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# Sensors used:
+I have modelled all the sensors that I have used for my robotic cars instead of incorporating the pre-existing "proto=sensors" and by this I mean, I designed it's outlook without using the various complete sensor models available. I have used distance sensors for both tracking the black line on white surface as well to avoid obstacles. To establish communication between them, I have modelled and used emitter-reciever modules.
 
-### Markdown
+# Working:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Check out the video attached below to visualize how my robotic cars work as a whole.
 
-```markdown
-Syntax highlighted code block
+https://user-images.githubusercontent.com/71832455/118354313-2839fa00-b588-11eb-85b2-c673489569b3.mp4
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Azeem-Salvatore/Line-following-vehicle/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+To take a look at the codes used in this project, click on "view on github" button at the top of this page
