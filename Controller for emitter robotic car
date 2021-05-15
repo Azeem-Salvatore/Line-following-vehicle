@@ -1,0 +1,222 @@
+/*
+ * File:          Red_2_0.c
+ * Date:          08/07/2020
+ * Description:  custom made for red bot V2.
+ * Author:       Azeem.
+ * Modifications:
+ */
+
+/*
+ * You may need to add include files like <webots/distance_sensor.h> or
+ * <webots/motor.h>, etc.
+ */
+#include <webots/robot.h>
+#include <webots/distance_sensor.h>
+#include <webots/motor.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <webots/emitter.h>
+#include <string.h>
+#include <webots/supervisor.h>
+
+/*
+ * You may want to add macros here.
+ // black line = 490+
+// white surface = 105- 
+ 
+ */
+#define TIME_STEP 64
+#define COMMUNICATION_CHANNEL 1
+
+/*
+ * This is the main program.
+ * The arguments of the main function can be specified by the
+ * "controllerArgs" field of the Robot node
+ */
+int main(int argc, char **argv) {
+  /* necessary to initialize webots stuff */
+  wb_robot_init();
+   // do this once only
+  WbNodeRef robot_node = wb_supervisor_node_get_from_def("Red");
+  WbFieldRef trans_field = wb_supervisor_node_get_field(robot_node, "translation");
+
+
+ //internal Variables 
+ int i;
+ int message_printed = 0;
+ 
+ 
+ // setup emitter channel
+ 
+  WbDeviceTag communication = wb_robot_get_device("emitter");
+ wb_emitter_set_channel(communication, COMMUNICATION_CHANNEL);
+ 
+     // initialise motors
+     
+  WbDeviceTag wheels[4];
+  char wheels_names[4][8] = {"wheel1", "wheel2", "wheel3", "wheel4"};
+  for (i = 0; i < 4; i++) {
+    wheels[i] = wb_robot_get_device(wheels_names[i]);
+    wb_motor_set_position(wheels[i], INFINITY);
+  }
+ 
+     // initialise distance sensors
+  
+  WbDeviceTag DSR = wb_robot_get_device("ds_right");
+  wb_distance_sensor_enable(DSR, TIME_STEP);
+  WbDeviceTag DSL = wb_robot_get_device("ds_left");
+  wb_distance_sensor_enable(DSL, TIME_STEP);
+ 
+ 
+ // initialize other sensors present.
+ 
+   WbDeviceTag lsensor = wb_robot_get_device("S2");
+  wb_distance_sensor_enable(lsensor, TIME_STEP);
+  WbDeviceTag Rsensor = wb_robot_get_device("S3");
+  wb_distance_sensor_enable(Rsensor, TIME_STEP);
+  WbDeviceTag lstopsensor = wb_robot_get_device("SS1");
+  wb_distance_sensor_enable(lstopsensor, TIME_STEP);
+  WbDeviceTag Rstopsensor = wb_robot_get_device("SS2");
+  wb_distance_sensor_enable(Rstopsensor, TIME_STEP);
+
+// Define various functions
+  
+    void Forward()
+{ 
+    double lspeed = 4.0;
+    double rspeed = 4.0;
+                 // write actuators inputs
+    wb_motor_set_velocity(wheels[0], lspeed);
+    wb_motor_set_velocity(wheels[1], rspeed);
+    wb_motor_set_velocity(wheels[2], lspeed);
+    wb_motor_set_velocity(wheels[3], rspeed);
+    
+}
+
+void turnleft()
+{ 
+    double lspeed = -2.0;
+    double rspeed = 4.0;
+                 // write actuators inputs
+    wb_motor_set_velocity(wheels[0], lspeed);
+    wb_motor_set_velocity(wheels[1], rspeed);
+    wb_motor_set_velocity(wheels[2], lspeed);
+    wb_motor_set_velocity(wheels[3], rspeed);
+    
+}
+
+void turnright()
+{ 
+    double lspeed = 4.0;
+    double rspeed = -2.0;
+                 // write actuators inputs
+    wb_motor_set_velocity(wheels[0], lspeed);
+    wb_motor_set_velocity(wheels[1], rspeed);
+    wb_motor_set_velocity(wheels[2], lspeed);
+    wb_motor_set_velocity(wheels[3], rspeed);
+    
+}
+
+void Stop()
+{ 
+    double lspeed = 0.0;
+    double rspeed = 0.0;
+                 // write actuators inputs
+    wb_motor_set_velocity(wheels[0], lspeed);
+    wb_motor_set_velocity(wheels[1], rspeed);
+    wb_motor_set_velocity(wheels[2], lspeed);
+    wb_motor_set_velocity(wheels[3], rspeed);
+    
+}
+ 
+ 
+ 
+  /*
+   * You should declare here WbDeviceTag variables for storing
+   * robot devices like this:
+   *  WbDeviceTag my_sensor = wb_robot_get_device("my_sensor");
+   *  WbDeviceTag my_actuator = wb_robot_get_device("my_actuator");
+   */
+
+  /* main loop
+   * Perform simulation steps of TIME_STEP milliseconds
+   * and leave the loop when the simulation is over
+   */
+  while (wb_robot_step(TIME_STEP) != -1) {
+  
+     // this is done repeatedly
+    const double *values = wb_supervisor_field_get_sf_vec3f(trans_field);
+//   printf("MY_ROBOT is at position: %g %g %g\n", values[0], values[1], values[2]);
+   //fprintf(fptr,"%g, %g, %g\n", values[0], values[1], values[2]);
+   
+    const double lvalue = wb_distance_sensor_get_value(lsensor);
+    const double Rvalue = wb_distance_sensor_get_value(Rsensor);
+    const double Cobsvalue = wb_distance_sensor_get_value(lstopsensor);
+    const double Rstopvalue = wb_distance_sensor_get_value(Rstopsensor);
+    const double DSRV = wb_distance_sensor_get_value(DSR);
+    const double DSLV = wb_distance_sensor_get_value(DSL);
+   // printf("Left Sensor value is %f\n , Right Sensor value is %f\n", lvalue , Rvalue);
+  //   printf("DSLvalue is %f\n , DSRvalue is %f\n", DSLV , DSRV );
+
+      if( DSRV <= 850 || DSLV <= 850)
+   {turnleft();
+   }  
+
+else{   
+    if(lvalue <= 105 && Rvalue <= 105) //Go forward
+    { Forward(); }
+    
+    if(lvalue >= 110 && Rvalue <= 105 ) //Left turn
+    { turnleft(); }
+    
+   if(lvalue >= 110 && Rvalue >= 110)   //Left turn cond 2
+   { turnleft(); }
+    
+    if(lvalue <= 105 && Rvalue >= 110 ) //Right turn
+    { turnright();}
+
+//  if (DSLV <= 999 && DSRV <= 999 ) //Stop cond 2
+//    { Stop();}
+    
+       
+   if (lvalue >= 110 && Rvalue >=110 && DSLV <= 999 && DSRV <= 999 ) //Stop
+    { Stop();
+   //  fclose(fptr);
+            if (message_printed == 0) {
+          /* print null-terminated message */
+         printf("Reached the Common Collection Point \n");
+          message_printed = 1;
+        }
+       else {
+        if (message_printed == 1) {
+          printf("Another Robot En-Route to Starting Point \n");
+          message_printed = 2;
+        }
+      }
+     const char *message = "Move To Point A";
+     wb_emitter_send(communication, message, strlen(message) + 1);
+     }
+  
+      }
+   
+    /*
+     * Read the sensors :
+     * Enter here functions to read sensor data, like:
+     *  double val = wb_distance_sensor_get_value(my_sensor);
+     */
+
+    /* Process sensor data here */
+
+    /*
+     * Enter here functions to send actuator commands, like:
+     * wb_motor_set_position(my_actuator, 10.0);
+     */
+  };
+
+  /* Enter your cleanup code here */
+
+  /* This is necessary to cleanup webots resources */
+  wb_robot_cleanup();
+
+  return 0;
+}
